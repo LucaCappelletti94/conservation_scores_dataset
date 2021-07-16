@@ -62,7 +62,7 @@ def retrieve_all(
                 assembly,
                 type_name,
                 specific_type,
-                window_size
+                str(window_size)
             )
 
             os.makedirs(main_path, exist_ok=True)
