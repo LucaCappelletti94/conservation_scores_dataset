@@ -45,7 +45,7 @@ def retrieve_all(
     os.makedirs(os.path.dirname(bed_path), exist_ok=True)
 
     bed = y.reset_index()[y.index.names]
-    bed.to_csv(bed_path, sep="\t")
+    bed.to_csv(bed_path, sep="\t", header=False, index=False)
 
     urls = compress_json.local_load("urls.json")[assembly]
     for type_name, data_urls in tqdm(
