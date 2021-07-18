@@ -1,3 +1,5 @@
+"""Module for retrieval of entire batches"""
+from typing import List, Union
 from tqdm.auto import tqdm
 from epigenomic_dataset import load_epigenomes
 import compress_json
@@ -7,9 +9,9 @@ from .extract import extract
 
 def retrieve_all(
     assembly: str = "hg38",
-    dataset: str = "fantom",
-    region: str = "promoters",
-    window_size: int = 256,
+    datasets: Union[str, List[str]] = "fantom",
+    regions: Union[str, List[str]] = "promoters",
+    window_sizes: Union[int, List[int]] = 256,
     clear_download: bool = False,
     cache_directory: str = "conservation_scores"
 ):
@@ -19,72 +21,102 @@ def retrieve_all(
     ---------------------------
     assembly: str = "hg38",
         The assembly to retrieve.
-    dataset: str = "fantom",
+    datasets: Union[str, List[str]] = "fantom",
         The dataset to retrieve, currently FANTOM5 and ROADMAP are supported.
-    region: str = "promoters",
+    regions: Union[str, List[str]] = "promoters",
         The region to retrieve the data for.
         It can either be "promoters" or "enhancers".
-    window_size: int = 256,
+    window_sizes: Union[int, List[int]] = 256,
         The window size to mine.
     clear_download: bool = False,
         Whether to clear the data once downloaded.
     """
-    # Retrieving the epigenomic data
-    # We retrieve the labels from here and not directly from crr labels
-    # only because the labels are cached in load epigenomes and they
-    # do not require further processing.
-    _, y = load_epigenomes(
-        assembly=assembly,
-        dataset=dataset,
-        region=region,
-        window_size=window_size,
-    )
-
-    bed_path = os.path.join(
-        cache_directory,
-        dataset,
-        assembly,
-        region,
-        "{}.bed".format(window_size)
-    )
-
-    os.makedirs(os.path.dirname(bed_path), exist_ok=True)
-
-    bed = y.reset_index()[y.index.names]
-    bed.to_csv(bed_path, sep="\t", header=False, index=False)
-
-    urls = compress_json.local_load("urls.json")[assembly]
-    for type_name, data_urls in tqdm(
-        list(urls.items()),
-        desc="Retrieve all types of data"
+    # Normalize the input data
+    if isinstance(datasets, str):
+        datasets = [datasets]
+    if isinstance(regions, str):
+        regions = [regions]
+    if isinstance(window_sizes, int):
+        window_sizes = [window_sizes]
+    for dataset in tqdm(
+        datasets,
+        desc="Retrieve different datasets",
+        leave=False,
+        disable=len(datasets) == 1
     ):
-        for specific_type, url in tqdm(
-            list(data_urls.items()),
-            desc="Retrieve data of type {}".format(type_name)
+        for region in tqdm(
+            regions,
+            desc="Retrieve different regions",
+            leave=False,
+            disable=len(regions) == 1
         ):
-            bigwig_path = os.path.join(
-                cache_directory,
-                assembly,
-                type_name,
-                "{}.bw".format(specific_type),
-            )
+            for window_size in tqdm(
+                window_sizes,
+                desc="Retrieve different window sizes",
+                leave=False,
+                disable=len(window_sizes) == 1
+            ):
+                # Retrieving the epigenomic data
+                # We retrieve the labels from here and not directly from crr labels
+                # only because the labels are cached in load epigenomes and they
+                # do not require further processing.
+                _, y = load_epigenomes(
+                    assembly=assembly,
+                    dataset=dataset,
+                    region=region,
+                    window_size=window_size,
+                )
 
-            target_path = os.path.join(
-                cache_directory,
-                dataset,
-                assembly,
-                region,
-                type_name,
-                "{}.tsv".format(specific_type),
-            )
+                bed_path = os.path.join(
+                    cache_directory,
+                    assembly,
+                    dataset,
+                    region,
+                    "{}.bed".format(window_size)
+                )
 
-            os.makedirs(os.path.dirname(bigwig_path), exist_ok=True)
-            os.makedirs(os.path.dirname(target_path), exist_ok=True)
+                os.makedirs(os.path.dirname(bed_path), exist_ok=True)
 
-            extract(
-                bed_path,
-                bigwig_path,
-                target_path,
-                url,
-                clear_download=clear_download
-            )
+                bed = y.reset_index()[y.index.names]
+                bed.to_csv(bed_path, sep="\t", header=False, index=False)
+
+                urls = compress_json.local_load("urls.json")[assembly]
+                for type_name, data_urls in tqdm(
+                    list(urls.items()),
+                    desc="Retrieve all types of conservation data",
+                    leave=False
+                ):
+                    for specific_type, url in tqdm(
+                        list(data_urls.items()),
+                        desc="Retrieve data of type {}".format(type_name),
+                        leave=False
+                    ):
+                        bigwig_path = os.path.join(
+                            cache_directory,
+                            assembly,
+                            type_name,
+                            "{}.bw".format(specific_type),
+                        )
+
+                        target_path = os.path.join(
+                            cache_directory,
+                            assembly,
+                            type_name,
+                            specific_type,
+                            dataset,
+                            region,
+                            "{}.tsv".format(window_size),
+                        )
+
+                        os.makedirs(os.path.dirname(
+                            bigwig_path), exist_ok=True)
+                        os.makedirs(os.path.dirname(
+                            target_path), exist_ok=True)
+
+                        extract(
+                            bed_path,
+                            bigwig_path,
+                            target_path,
+                            url,
+                            clear_download=clear_download
+                        )
