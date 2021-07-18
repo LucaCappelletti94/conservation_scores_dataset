@@ -1,5 +1,6 @@
 import os
 from downloaders import BaseDownloader
+import pandas as pd
 from pybwtool import extract as extract_bigwig
 
 
@@ -37,6 +38,15 @@ def extract(
         bigwig_path=bigwig_path,
         target=target_path
     )
+
+    # Reloading file and storing it as compressed file
+    pd.read_csv(target_path, sep="\t").to_csv(
+        "{}.xz".format(target_path),
+        index=False
+    )
+
+    # Removing non compressed version of the file
+    os.remove(target_path)
 
     # Remove the bigwig file if required
     if clear_download:
