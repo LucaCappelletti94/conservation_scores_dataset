@@ -9,9 +9,9 @@ from .extract import extract
 
 def retrieve_all(
     assembly: str = "hg38",
-    datasets: Union[str, List[str]] = "fantom",
-    regions: Union[str, List[str]] = "promoters",
-    window_sizes: Union[int, List[int]] = 256,
+    datasets: Union[str, List[str]] = "auto",
+    regions: Union[str, List[str]] = "auto",
+    window_sizes: Union[str, int, List[int]] = "auto",
     clear_download: bool = False,
     cache_directory: str = "conservation_scores"
 ):
@@ -21,17 +21,26 @@ def retrieve_all(
     ---------------------------
     assembly: str = "hg38",
         The assembly to retrieve.
-    datasets: Union[str, List[str]] = "fantom",
+    datasets: Union[str, List[str]] = "auto",
         The dataset to retrieve, currently FANTOM5 and ROADMAP are supported.
-    regions: Union[str, List[str]] = "promoters",
+        The default value, "auto", means that all the currently available datasets will be retrieved.
+    regions: Union[str, List[str]] = "auto",
         The region to retrieve the data for.
         It can either be "promoters" or "enhancers".
-    window_sizes: Union[int, List[int]] = 256,
+        The default value, "auto", means that all the currently available regions will be retrieved.
+    window_sizes: Union[str, int, List[int]] = "auto",
         The window size to mine.
+        The default value, "auto", means that all the currently available window sizes will be retrieved.
     clear_download: bool = False,
         Whether to clear the data once downloaded.
     """
     # Normalize the input data
+    if datasets == "auto":
+        datasets = ["fantom", "roadmap"]
+    if regions == "auto":
+        regions = ["enhancers", "promoters"]
+    if window_sizes == "auto":
+        window_sizes = [64, 128, 256, 512, 1024]
     if isinstance(datasets, str):
         datasets = [datasets]
     if isinstance(regions, str):
