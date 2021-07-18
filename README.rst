@@ -27,6 +27,7 @@ After having installed the package, just run the following to retrieve all data 
 
 It will display some loading bars showing you what the pipeline is doing at a given time, such as the following ones:
 
-ADDIMAGE
+.. image:: https://github.com/LucaCappelletti94/conservation_scores_dataset/blob/main/example_screenshot.png?raw=true
+   :width: 600
 
 Based on the main loop provided in the retrieve all file, other similar automati retrieval pipelines for other BED files can be trivially built.
