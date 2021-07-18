@@ -8,9 +8,10 @@ from .extract import extract
 def retrieve_all(
     assembly: str = "hg38",
     dataset: str = "fantom",
+    region: str = "promoters",
     window_size: int = 256,
     clear_download: bool = False,
-    cache_directory: str = "conservation_scores_data"
+    cache_directory: str = "conservation_scores"
 ):
     """Download and mines all data relative to conservation scores for HG38.
 
@@ -20,6 +21,9 @@ def retrieve_all(
         The assembly to retrieve.
     dataset: str = "fantom",
         The dataset to retrieve, currently FANTOM5 and ROADMAP are supported.
+    region: str = "promoters",
+        The region to retrieve the data for.
+        It can either be "promoters" or "enhancers".
     window_size: int = 256,
         The window size to mine.
     clear_download: bool = False,
@@ -32,6 +36,7 @@ def retrieve_all(
     _, y = load_epigenomes(
         assembly=assembly,
         dataset=dataset,
+        region=region,
         window_size=window_size,
     )
 
@@ -39,6 +44,7 @@ def retrieve_all(
         cache_directory,
         dataset,
         assembly,
+        region,
         "{}.bed".format(window_size)
     )
 
@@ -56,21 +62,29 @@ def retrieve_all(
             list(data_urls.items()),
             desc="Retrieve data of type {}".format(type_name)
         ):
-            main_path = os.path.join(
+            bigwig_path = os.path.join(
+                cache_directory,
+                assembly,
+                type_name,
+                "{}.bw".format(specific_type),
+            )
+
+            target_path = os.path.join(
                 cache_directory,
                 dataset,
                 assembly,
+                region,
                 type_name,
-                specific_type,
-                str(window_size)
+                "{}.tsv".format(specific_type),
             )
 
-            os.makedirs(main_path, exist_ok=True)
+            os.makedirs(os.path.dirname(bigwig_path), exist_ok=True)
+            os.makedirs(os.path.dirname(target_path), exist_ok=True)
 
             extract(
                 bed_path,
-                "{main_path}/bigwig.bw".format(main_path=main_path),
-                "{main_path}/target.csv".format(main_path=main_path),
+                bigwig_path,
+                target_path,
                 url,
                 clear_download=clear_download
             )
