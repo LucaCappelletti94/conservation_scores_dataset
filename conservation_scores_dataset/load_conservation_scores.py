@@ -74,6 +74,7 @@ def load_conservation_scores(
         data_path,
         low_memory=False,
         header=None,
+        sep="\t"
     )
 
     index_columns = [
