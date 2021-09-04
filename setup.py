@@ -61,6 +61,7 @@ setup(
     # Add here the package dependencies
     install_requires=[
         "downloaders",
+        "epigenomic_dataset",
         "pandas>=1.1.5",
         "pybwtool>=1.0.8",
         "crr_labels>=1.1.1",
