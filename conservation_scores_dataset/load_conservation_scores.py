@@ -76,16 +76,25 @@ def load_conservation_scores(
         header=None,
     )
 
-    X.columns = [
+    index_columns = [
         "chrom",
         "chromStart",
         "chromEnd",
         "strand",
         "window_size",
+    ]
+
+    X.columns = [
+        *index_columns,
         *[
             i
             for i in range(X.shape[1] - 5)
         ]
     ]
+
+    X.set_index(
+        index_columns,
+        inplace=True
+    )
 
     return X
