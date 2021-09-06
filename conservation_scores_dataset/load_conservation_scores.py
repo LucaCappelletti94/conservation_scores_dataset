@@ -49,11 +49,10 @@ def load_conservation_scores(
     ----------------------------------------
     Return tuple with input and output DataFrames.
     """
-    repository = "https://github.com/LucaCappelletti94/conservation_scores_dataset/blob/main/{}conservation_scores".format(
-        "imputed_" if imputed else ""
-    )
+    repository = "https://github.com/LucaCappelletti94/conservation_scores_dataset/blob/main/"
     get_parameter = "?raw=true"
-    data_path_placeholder = "{{root}}/{assembly}/{conservation_scores}/{conservation_score_version}/{dataset}/{region}/{window_size}.tsv.xz".format(
+    data_path_placeholder = "{{root}}/{imputed}conservation_scores/{assembly}/{conservation_scores}/{conservation_score_version}/{dataset}/{region}/{window_size}.tsv.xz".format(
+        imputed="imputed_" if imputed else "",
         root=root,
         assembly=assembly,
         conservation_scores=conservation_scores,
