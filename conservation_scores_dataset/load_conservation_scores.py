@@ -11,6 +11,7 @@ def load_conservation_scores(
     dataset: str = "fantom",
     region: str = "promoters",
     window_size: int = 256,
+    imputed: bool = True,
     root: str = "datasets",
     verbose: int = 2
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
@@ -36,6 +37,9 @@ def load_conservation_scores(
         Window size to consider. By default 256.
         Currently available window sizes are
         listed in the repository README file.
+    imputed: bool = True,
+        Whether to load the version of the dataset that has
+        already been imputed.
     root: str = "datasets"
         Where to store the downloaded data.
     verbose: int = 2,
@@ -45,7 +49,9 @@ def load_conservation_scores(
     ----------------------------------------
     Return tuple with input and output DataFrames.
     """
-    repository = "https://github.com/LucaCappelletti94/conservation_scores_dataset/blob/main/conservation_scores"
+    repository = "https://github.com/LucaCappelletti94/conservation_scores_dataset/blob/main/{}conservation_scores".format(
+        "imputed_" if imputed else ""
+    )
     get_parameter = "?raw=true"
     data_path_placeholder = "{{root}}/{assembly}/{conservation_scores}/{conservation_score_version}/{dataset}/{region}/{window_size}.tsv.xz".format(
         root=root,
