@@ -1,0 +1,33 @@
+{
+    "creation_time": 1630913013.1436195,
+    "creation_time_human": "2021-09-06 07:23:33",
+    "time_delta": 5.895031452178955,
+    "time_delta_human": "5 seconds",
+    "file_dump_time": 2.521179437637329,
+    "file_dump_time_human": "2 seconds",
+    "file_dump_size": 940428,
+    "file_dump_size_human": "940.4 kB",
+    "load_kwargs": {},
+    "dump_kwargs": {},
+    "function_name": "compute_embedding",
+    "function_file": "<ipython-input-9-1580771d799d>:1",
+    "args_to_ignore": [],
+    "source": "@Cache(\n    cache_path=\"tsne_embeddings/{assembly}/{dataset}/{conservation_score}/{conservation_score_version}/{region}/{window_size}.csv.xz\"\n)\ndef compute_embedding(\n    assembly: str,\n    dataset: str,\n    conservation_score: str,\n    conservation_score_version: str,\n    region: str,\n    window_size: int\n):\n    # Retrieve the conservation scores\n    X_imputed = load_conservation_scores(\n        assembly=assembly,\n        dataset=dataset,\n        conservation_scores=conservation_score,\n        conservation_score_version=conservation_score_version,\n        region=region,\n        window_size=window_size,\n        imputed=True\n    )\n    # Identify rows with exclusively NaN values\n    all_nan_values_mask = X_imputed.isna().all(axis=1)\n    # Drop the rows with only NaN values\n    X_without_nan_rows = X_imputed[~all_nan_values_mask]\n    # Compute the TSNE embedding\n    tsne_embedding = pd.DataFrame(\n        TSNE().fit_transform(X_without_nan_rows.values),\n        index=X_without_nan_rows.index,\n        columns=[\"first_component\", \"second_component\"]\n    )\n    # Re-expand the indices to include NaN rows\n    expanded_tsne_embedding = pd.DataFrame(\n        np.nan,\n        index=X_imputed.index,\n        columns=tsne_embedding.columns\n    )\n    # Assign the values\n    expanded_tsne_embedding.loc[tsne_embedding.index] = tsne_embedding\n    # Return the computed embedding and the filtered labels\n    return tsne_embedding\n",
+    "backend_metadata": {
+        "type": "pandas",
+        "columns_types": {
+            "first_component": "float32",
+            "second_component": "float32"
+        },
+        "index_type": "str",
+        "columns_names_type": "str"
+    },
+    "parameters": {
+        "assembly": "hg38",
+        "dataset": "fantom",
+        "conservation_score": "phyloP",
+        "conservation_score_version": "phyloP17way",
+        "region": "enhancers",
+        "window_size": 64
+    }
+}
