@@ -58,7 +58,11 @@ def load_aggregated_conservation_scores(
     )
 
     data_path = data_path_placeholder.format(root=root)
-    downloader = BaseDownloader(target_directory=root, verbose=verbose)
+    downloader = BaseDownloader(
+        target_directory=root,
+        verbose=verbose,
+        auto_extract=False
+    )
 
     downloader.download(
         urls=data_path_placeholder.format(root=repository)+get_parameter,
