@@ -26,26 +26,14 @@ def find_version(*file_paths):
     raise RuntimeError("Unable to find version string.")
 
 
-__version__ = find_version("epigenomic_dataset", "__version__.py")
-
-test_deps =[
-    "pytest",
-    "pytest-cov",
-    "coveralls",
-    "validate_version_code",
-    "codacy-coverage"
-]
-
-extras = {
-    'test': test_deps,
-}
+__version__ = find_version("conservation_scores_dataset", "__version__.py")
 
 setup(
     name='conservation_scores_dataset',
     version=__version__,
     description="Python package providing retrieval for conservation scores.",
     long_description=long_description,
-    url="https://github.com/LucaCappelletti94/epigenomic_dataset",
+    url="https://github.com/LucaCappelletti94/conservation_scores_dataset",
     author="Luca Cappelletti",
     author_email="cappelletti.luca94@gmail.com",
     # Choose your license
@@ -57,14 +45,11 @@ setup(
         'Programming Language :: Python :: 3'
     ],
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
-    tests_require=test_deps,
     # Add here the package dependencies
     install_requires=[
         "downloaders",
-        "epigenomic_dataset",
         "pandas>=1.1.5",
         "pybwtool>=1.0.8",
-        "crr_labels>=1.1.1",
+        "epigenomic_dataset",
     ],
-    extras_require=extras,
 )
