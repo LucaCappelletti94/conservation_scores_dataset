@@ -53,7 +53,6 @@ def load_conservation_scores(
     get_parameter = "?raw=true"
     data_path_placeholder = "{{root}}/{imputed}conservation_scores/{assembly}/{conservation_scores}/{conservation_score_version}/{dataset}/{region}/{window_size}.tsv.xz".format(
         imputed="imputed_" if imputed else "",
-        root=root,
         assembly=assembly,
         conservation_scores=conservation_scores,
         conservation_score_version=conservation_score_version,
