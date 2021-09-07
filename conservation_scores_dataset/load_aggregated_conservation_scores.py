@@ -74,6 +74,7 @@ def load_aggregated_conservation_scores(
         index_col=[0, 1, 2, 3, 4],
         header=[0, 1],
         low_memory=False,
+        sep="\t"
     )
 
     X = X[[
