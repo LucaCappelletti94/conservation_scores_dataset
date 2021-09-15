@@ -30,4 +30,35 @@ It will display some loading bars showing you what the pipeline is doing at a gi
 .. image:: https://github.com/LucaCappelletti94/conservation_scores_dataset/blob/main/example_screenshot.png?raw=true
    :width: 400
 
+Recover data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In order to download the conservation scores run:
+
+.. code:: python
+
+    from conservation_scores_dataset import load_conservation_scores
+
+    X = load_conservation_scores(
+        assembly="hg38",
+        dataset="fantom",
+        conservation_scores=conservation_score,
+        conservation_score_version=conservation_score_version,
+        region="promoters",
+        window_size=256
+    )
+
+To load the aggregated ones, do run:
+
+.. code:: python
+
+    from conservation_scores_dataset import load_aggregated_conservation_scores
+
+    X = load_aggregated_conservation_scores(
+        assembly="hg38",
+        dataset="fantom",
+        region="promoters",
+        metric="mean",
+        window_size=256
+    )
+
 Based on the main loop provided in the retrieve all file, other similar automati retrieval pipelines for other BED files can be trivially built.
